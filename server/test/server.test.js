@@ -40,7 +40,7 @@ describe('GET TEST',()=> {
         .get('/todos')
         .expect(200)
         .expect((res)=> {
-            expect(res.body.todos.length).toBe(6);      
+            expect(res.body.todos.length).toBe(1);      
         })
         .end(done);
     });
@@ -65,6 +65,34 @@ describe('GET TEST',()=> {
        
     });
     
+});
+describe('PATCH /todos/id', ()=> {
+    it('Patch test', (done)=> {
+        var completed = true;
+        Todo.find({text}).then((res)=> {
+            var id = res[0]._id;
+            request(app)
+            .patch(`/todos/${id}`)
+            .send({completed})
+            .expect(200)
+            .expect((res)=> {
+                console.log(res.body);
+                expect(res.body.completed).toBe(completed);
+                expect(res.body.completedAt).not.toBeNull();
+              
+            })
+            .end((err,res)=> {
+                if(err)
+                    return done(err);
+                Todo.findOne({text}).then((todos)=> {
+                  expect(todos.completed).toBe(completed);
+                   done();
+                },(e) => done(e));
+            })
+
+        });
+
+    })
 });
 
 describe('DELETE /todos/id', ()=> {
@@ -92,3 +120,4 @@ describe('DELETE /todos/id', ()=> {
 
     });
 });
+    
